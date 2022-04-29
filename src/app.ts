@@ -57,7 +57,7 @@ function validate(validatableInput: Validatable) {
 class ProjectInput {
     templateElement: HTMLTemplateElement;
     hostElement: HTMLDivElement;
-    formElement: HTMLFormElement;
+    element: HTMLFormElement;
     titleInputElement: HTMLInputElement;
     descriptionTextAreaElement: HTMLTextAreaElement;
     peopleInputElement: HTMLInputElement;
@@ -67,13 +67,13 @@ class ProjectInput {
         this.templateElement = document.querySelector('#project-input') as HTMLTemplateElement;
         this.hostElement = document.querySelector('#app') as HTMLDivElement;
 
-        const importedFormNode = document.importNode(this.templateElement.content, true);
+        const importedNode = document.importNode(this.templateElement.content, true);
 
-        (this.formElement = importedFormNode.firstElementChild as HTMLFormElement).id = 'user-input';
+        (this.element = importedNode.firstElementChild as HTMLFormElement).id = 'user-input';
 
-        this.titleInputElement = this.formElement.querySelector('#title') as HTMLInputElement;
-        this.descriptionTextAreaElement = this.formElement.querySelector('#description') as HTMLTextAreaElement;
-        this.peopleInputElement = this.formElement.querySelector('#people') as HTMLInputElement;
+        this.titleInputElement = this.element.querySelector('#title') as HTMLInputElement;
+        this.descriptionTextAreaElement = this.element.querySelector('#description') as HTMLTextAreaElement;
+        this.peopleInputElement = this.element.querySelector('#people') as HTMLInputElement;
 
         this.configure();
         this.attach();
@@ -133,12 +133,48 @@ class ProjectInput {
     }
 
     private configure() : void {
-        this.formElement.addEventListener('submit', this.submitHandler);
+        this.element.addEventListener('submit', this.submitHandler);
     }
 
     private attach() : void {
-        this.hostElement.insertAdjacentElement('afterbegin', this.formElement);
+        this.hostElement.insertAdjacentElement('afterbegin', this.element);
     }
 }
 
+class ProjectItem {
+
+}
+class ProjectList {
+    templateElement: HTMLTemplateElement;
+    hostElement: HTMLDivElement;
+    element: HTMLElement;
+
+    constructor(
+        private status: 'active' | 'completed'
+    ) {
+        this.templateElement = document.querySelector('#project-list') as HTMLTemplateElement;
+        this.hostElement = document.querySelector('#app') as HTMLDivElement;
+
+        const importedNode = document.importNode(this.templateElement.content, true);
+
+        (this.element = importedNode.firstElementChild as HTMLElement).id = `${status}-projects`;
+
+        this.attach();
+        this.render();
+    }
+
+    private render() {
+        const listId = `${this.status}-project-list`;
+        this.element.querySelector('ul')!.id = listId;
+        this.element.querySelector('h2')!.textContent = this.status.toUpperCase() + ' PROJECTS';
+    }
+
+    private attach() : void {
+        this.hostElement.insertAdjacentElement('beforeend', this.element);
+    }
+}
+
+
 const mainInput = new ProjectInput();
+const activeProjects = new ProjectList('active');
+const completedProjects = new ProjectList('completed');
