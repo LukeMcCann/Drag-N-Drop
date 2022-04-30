@@ -210,7 +210,13 @@ class ProjectList {
         (this.element = importedNode.firstElementChild as HTMLElement).id = `${status}-projects`;
 
         globalState.addListener((projects: Project[]) => {
-            this.assignedProjects = projects;
+            const relevantProjects = projects.filter(project => {
+                if (this.status === 'active') {
+                    return project.status === ProjectStatus.Active
+                };
+                return project.status === ProjectStatus.Finished
+            });
+            this.assignedProjects = relevantProjects;
             this.renderProjects();
         });
 
@@ -220,6 +226,7 @@ class ProjectList {
 
     private renderProjects() {
         const listElement = document.getElementById(`${this.status}-project-list`) as HTMLUListElement;
+        listElement.innerHTML = '';
         for (const project of this.assignedProjects) {
             const newListItem = document.createElement('li');
             newListItem.textContent = project.title;
