@@ -137,6 +137,14 @@ class ProjectInput extends Component<HTMLDivElement, HTMLFormElement>{
         this.configure();
     }
 
+    public render(): void {
+        throw new Error("Method not implemented.");
+    }
+
+    public configure() : void {
+        this.element.addEventListener('submit', this.submitHandler);
+    }
+
     private clearInputs() {
         this.titleInputElement.value = '';
         this.descriptionTextAreaElement.value = '';
@@ -190,9 +198,6 @@ class ProjectInput extends Component<HTMLDivElement, HTMLFormElement>{
         }
     }
 
-    public configure() : void {
-        this.element.addEventListener('submit', this.submitHandler);
-    }
 }
 
 enum ProjectStatus { Active, Finished };
