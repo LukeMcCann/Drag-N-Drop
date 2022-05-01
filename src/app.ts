@@ -30,22 +30,28 @@ abstract class Component<T extends HTMLElement, U extends HTMLElement> {
     abstract render(): void;
 }
 
-class ProjectState {
-    private listeners: Listener[] = [];
+class State {
+    protected listeners: Listener[] = [];
+
+    public addListener(listenerFn: Listener) {
+        this.listeners.push(listenerFn);
+    }
+}
+
+class ProjectState extends State {
+
     private projects : Project[] = [];
     private static instance : ProjectState;
 
-    private constructor() {}
+    private constructor() {
+        super();
+    }
 
     public static getInstance() : ProjectState {
         if (!this.instance) {
             this.instance = new ProjectState();
         }
         return this.instance;
-    }
-
-    public addListener(listenerFn: Listener) {
-        this.listeners.push(listenerFn);
     }
 
     public addProject(title: string, description: string, numPeople: number) : void {
