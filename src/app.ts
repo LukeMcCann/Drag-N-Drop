@@ -240,15 +240,22 @@ class ProjectItem extends Component<HTMLUListElement, HTMLLIElement> implements 
         return `${+this.project.people} members`;
     }
 
-    public dragStartHandler(event: DragEvent): void {
-
+    @AutoBind
+    public dragStartHandler(_event: DragEvent): void {
+        console.log({ this: this });
+        console.log('Dragging!');
     }
 
-    public dragEndHandler(event: DragEvent): void {
-
+    @AutoBind
+    public dragEndHandler(_event: DragEvent): void {
+        console.log({ this: this });
+        console.log('End of drag');
     }
 
-    public configure() : void {}
+    public configure() : void {
+        this.element.addEventListener('dragstart', this.dragStartHandler);
+        this.element.addEventListener('dragend', this.dragEndHandler);
+    }
 
     public render(): void {
         this.element.querySelector('h2')!.textContent = this.project.title;
