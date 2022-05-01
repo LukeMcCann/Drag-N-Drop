@@ -1,4 +1,4 @@
-type Listener = (items: Project[]) => void;
+type Listener<T> = (items: T[]) => void;
 
 abstract class Component<T extends HTMLElement, U extends HTMLElement> {
     templateElement: HTMLTemplateElement;
@@ -30,15 +30,15 @@ abstract class Component<T extends HTMLElement, U extends HTMLElement> {
     abstract render(): void;
 }
 
-class State {
-    protected listeners: Listener[] = [];
+class State<T> {
+    protected listeners: Listener<T>[] = [];
 
-    public addListener(listenerFn: Listener) {
+    public addListener(listenerFn: Listener<T>) {
         this.listeners.push(listenerFn);
     }
 }
 
-class ProjectState extends State {
+class ProjectState extends State<Project> {
 
     private projects : Project[] = [];
     private static instance : ProjectState;
