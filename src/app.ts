@@ -74,6 +74,21 @@ class ProjectState extends State<Project> {
             ProjectStatus.Active,
         );
         this.projects.push(newProject);
+        this.updateListeners();
+    }
+
+    public moveProject(idToMove: string, newStatus: ProjectStatus) : void {
+        const projectToMove = this.projects.find(project =>
+            project.id === idToMove
+        );
+
+        if (projectToMove && projectToMove.status !== newStatus) {
+            projectToMove.status = newStatus;
+            this.updateListeners();
+        }
+    }
+
+    private updateListeners() {
         for (const listenerFn of this.listeners) {
             listenerFn(this.projects.slice());
         }
@@ -241,9 +256,9 @@ class ProjectItem extends Component<HTMLUListElement, HTMLLIElement> implements 
     }
 
     @AutoBind
-    public dragStartHandler(_event: DragEvent): void {
-        console.log({ this: this });
-        console.log('Dragging!');
+    public dragStartHandler(event: DragEvent): void {
+        event.dataTransfer!.setData('text/plain', this.project.id);
+        event.dataTransfer!.effectAllowed = 'move';
     }
 
     @AutoBind
@@ -312,13 +327,22 @@ class ProjectList extends Component<HTMLDivElement, HTMLElement> implements Drag
     }
 
     @AutoBind
-    public dragOverHandler(_event: DragEvent): void {
-        const listElement = this.element.querySelector('ul') as HTMLUListElement;
-        listElement.classList.add('droppable');
+    public dragOverHandler(event: DragEvent): void {
+        // check data attached to the event is of the expected format
+        if (event.dataTransfer && event.dataTransfer.types[0] === 'text/plain') {
+            event.preventDefault();
+            const listElement = this.element.querySelector('ul') as HTMLUListElement;
+            listElement.classList.add('droppable');
+        }
     }
 
-    public dropHandler(_event: DragEvent): void {
-        console.log({ drop: _event });
+    @AutoBind
+    public dropHandler(event: DragEvent): void {
+        const projectId = event.dataTransfer!.getData('text/plain');
+        globalState.moveProject(
+            projectId,
+            this.status === 'active' ? ProjectStatus.Active : ProjectStatus.Finished
+        );
     }
 
     private renderProjects() {
