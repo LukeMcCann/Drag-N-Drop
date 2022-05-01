@@ -208,6 +208,38 @@ class ProjectInput extends Component<HTMLDivElement, HTMLFormElement>{
 
 enum ProjectStatus { Active, Finished };
 
+class ProjectItem extends Component<HTMLUListElement, HTMLLIElement> {
+    private project: Project;
+
+    constructor(
+        hosId: string,
+        project: Project,
+    ) {
+        super('single-project', hosId, false, project.id);
+        this.project = project;
+
+        this.configure();
+        this.render();
+    }
+
+    public get members() : string {
+        if (+this.project.people === 1) {
+            return '1 member';
+        }
+        return `${+this.project.people} members`;
+    }
+
+    public configure() : void {
+
+    }
+
+    public render(): void {
+        this.element.querySelector('h2')!.textContent = this.project.title;
+        this.element.querySelector('h3')!.textContent = this.members + ' assigned';
+        this.element.querySelector('p')!.textContent = this.project.description;
+    }
+}
+
 class Project {
     constructor (
         public id: string,
@@ -250,9 +282,7 @@ class ProjectList extends Component<HTMLDivElement, HTMLElement> {
         const listElement = document.getElementById(`${this.status}-project-list`) as HTMLUListElement;
         listElement.innerHTML = '';
         for (const project of this.assignedProjects) {
-            const newListItem = document.createElement('li');
-            newListItem.textContent = project.title;
-            listElement.appendChild(newListItem);
+            new ProjectItem(this.element.querySelector('ul')!.id, project);
         }
     }
 
